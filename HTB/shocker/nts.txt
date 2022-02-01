@@ -1,0 +1,14 @@
+shocker box :-
+nmap -sC -sV -A nmap/initial 10.10.10.56
+TRACEROUTE (using proto 1/icmp)
+HOP RTT       ADDRESS
+1   161.43 ms 10.10.14.1
+2   ... 30
+
+nmap -sC -sV -Pn 10.10.10.56
+google openssh ubuntu 7.2p version for exploit
+
+
+
+
+
