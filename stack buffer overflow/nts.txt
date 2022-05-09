@@ -1,0 +1,19 @@
+xfreerdp /u:admin /p:password /cert:ignore /v:10.10.34.164/workarea
+
+ran immunity on vul server
+then ran fuzzer.py on it for cheking the bugffer connection with overflwo process
+exploit is able to replace the buffer with its own payload
+
+crashing at EIP 41414141
+
+now generate a pattern based on length of bytes to crah the server
+msf-pattern_create -l 2400 // creating a offset of 400 after crashig position
+
+
+
+
+crashed at EIP 42424242 after seting offset and ret
+ESP:= 01AAFA30
+
+updating bad char payload
+give ESP:- 0189FA30

