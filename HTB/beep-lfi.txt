@@ -1,0 +1,10 @@
+dir enumeration showing pbx system, getting webmin just get credential for it as no default credential works
+simple searchsploit gives XSS, blind SQLi, code injection RCE vuln in the elastix. Interesting graph.ph LFI
+A reserach show the elastic 2.2.0 is vulnerable for LFI in context of web server as not santize input.
+The given exploit work as crm is install here. Just using LFI exploit in URL gives bunch of  password 
+
+PASSWORD=passw0rd FOPPASSWORD=jEhdIekWmdjE 
+
+as ssh not working due to key nedotiation fails so tried admin login and worked with admin in pbx and webmin
+
+Bos is with ssh hardening
